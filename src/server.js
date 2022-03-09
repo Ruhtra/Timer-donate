@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
-const Database = require('./config/mongoDB.js')
+const Database = require('./mongoDB.js')
 const tmi = require('tmi.js');
 const { Socket } = require('socket.io');
 const client = new tmi.Client({
