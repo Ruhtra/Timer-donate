@@ -84,7 +84,7 @@ client.connect().then((uri) => {
 
 client.on('message', (channel, tags, message, self) => {
   console.log('identifiquei')
-  if (tags['display-name'] == 'StreamElements') {
+  if (tags['display-name'].toLowerCase() == process.env.NAMEBOT) {
     if (message.indexOf(msgDonate[0]) >= 0 && message.indexOf(msgDonate[1]) && message.indexOf(msgDonate[2]) ) {
       let msgSplit = message.split(' ')
       insert({name: msgSplit[0], value: msgSplit[2].substring(2)})
