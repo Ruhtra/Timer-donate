@@ -3,9 +3,8 @@ require('dotenv').config()
 const express = require('express')
 const Database = require('./mongoDB.js')
 const tmi = require('tmi.js');
-const { Socket } = require('socket.io');
 const client = new tmi.Client({
-  channels: [ 'zahir' ]
+  channels: [ process.env.STREAM ]
 });
 
 const app = express()
@@ -84,6 +83,7 @@ client.connect().then((uri) => {
 });
 
 client.on('message', (channel, tags, message, self) => {
+  console.log('identifiquei')
   if (tags['display-name'] == 'StreamElements') {
     if (message.indexOf(msgDonate[0]) >= 0 && message.indexOf(msgDonate[1]) && message.indexOf(msgDonate[2]) ) {
       let msgSplit = message.split(' ')
