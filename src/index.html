@@ -90,12 +90,35 @@
         }
            
     </style>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap');
+        div#counter {
+            position: absolute;
+            width: 344px;
+            height: 158px;
+            background: url("https://lh3.googleusercontent.com/wMpRO3XXavFkZXYSlLVL-qnGAcDvdTDeo_RNWHxDpDOkRxCKfP48x6jZmrgTWBNEI5lRCObEjVP3gF3AqBJ4=w958-h896");
+            background-repeat: no-repeat;
+        }
+        div#counter div#timer {
+            margin-top: 10px;
+            margin-left: 55px;
+
+            font-family: 'Comfortaa', cursive;
+            font-size: 75px;
+            font-weight: 900;
+            height: 100%;
+            color: white;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-    <div id="block">
+    <!-- <div id="block">
         <div id="_1" class="up">
             <div>
-                <!-- <div id="stopwatch">08:45</div>&nbsp;<div>Pra acabar</div> -->
                 +&nbsp;<div id="hour"></div>:<div id="minute"></div>&nbsp;<div>De live </div>
             </div>
         </div>
@@ -110,10 +133,17 @@
             <div class="up">Stops</div>
             <div id="stop" class="down"></div>
         </div>
+    </div> -->
+    
+
+    <div id="counter">
+        <div id="timer">
+            <div id="hour">15</div>:
+            <div id="minute">40</div>
+        </div>
     </div>
 
-
-    <script>
+    <!-- <script>
         function addZeros(num, len) {
             let numberWithZeroes = String(num);
             let counter = numberWithZeroes.length;
@@ -141,7 +171,39 @@
             console.log(variables)
             insertElements(variables)
         })
+    </script> -->
+    <script>
+        const socket = io(window.location.href)
+        socket.emit('start', {})
+        function zero(x) {
+            if (x < 10) {
+                x = '0' + x;
+            } return x;
+        }
+        let end = new Date('2022/04/25 00:00:00');
+       
 
+        socket.on('update2', (d) => {
+            console.log(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`)
+            end = new Date(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`);
+        })
+            var counter = setInterval(function(){
+                var _second = 1000;
+                var _minute = _second * 60;
+                var _hour = _minute * 60;
+
+                var now = new Date();
+                console.log(end)
+                var diff = end - now;
+
+                var hour = Math.floor(diff/ _hour);
+                var minute = Math.floor((diff % _hour) / _minute);
+                var second = Math.floor((diff % _minute) / _second);
+
+                document.querySelector('#timer #hour').innerHTML = zero(hour);
+                document.querySelector('#timer #minute').innerHTML = zero(minute+1);
+                
+            },1000);
     </script>
 </body>
 </html>
