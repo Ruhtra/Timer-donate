@@ -65,13 +65,13 @@ const main = async () => {
   io.on('connection', (socket) => {
     emitir = async () => {
       let donates = await search()
-      socket.emit('update', {
-        time: getTime(donates),
-        stop: getMutiply(donates),
-        nextStop: (((getMutiply(donates)+1)*fixDonate)-count(donates)).toFixed(2),
-        fixDonate: fixDonate,
-        addTime: addTime
-      })
+      // socket.emit('update', {
+      //   time: getTime(donates),
+      //   stop: getMutiply(donates),
+      //   nextStop: (((getMutiply(donates)+1)*fixDonate)-count(donates)).toFixed(2),
+      //   fixDonate: fixDonate,
+      //   addTime: addTime
+      // })
 
       
       let b = getTime(donates)
@@ -83,7 +83,7 @@ const main = async () => {
 
       console.log('end: '+hora, minuto)
 
-      socket.emit('updatea', {hora: hora, minuto: minuto})
+      socket.emit('update', {hora: hora, minuto: minuto})
     }
 
     socket.on('start', () => {

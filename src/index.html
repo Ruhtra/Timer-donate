@@ -189,7 +189,7 @@
         let end = new Date('2022/04/25 00:00:00');
        
 
-        socket.on('updatea', (d) => {
+        socket.on('update', (d) => {
             window.document.querySelector('#log').innerHTML += d['hora']+' -> '
             window.document.querySelector('#log').innerHTML += d['minuto']+' -> '
             console.log(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`)
