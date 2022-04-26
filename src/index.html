@@ -178,7 +178,7 @@
         const socket = io(window.location.href)
         socket.on('connect', () => {
             socket.emit('start', {})
-            window.document.querySelector('#log').innerHTML += socket.id+' -> '
+            // window.document.querySelector('#log').innerHTML += socket.id+' -> '
         });
 
         function zero(x) {
@@ -190,8 +190,8 @@
        
 
         socket.on('update', (d) => {
-            window.document.querySelector('#log').innerHTML += d['hora']+' -> '
-            window.document.querySelector('#log').innerHTML += d['minuto']+' -> '
+            // window.document.querySelector('#log').innerHTML += d['hora']+' -> '
+            // window.document.querySelector('#log').innerHTML += d['minuto']+' -> '
             console.log(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`)
             end = new Date(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`);
         })
