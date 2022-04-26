@@ -143,6 +143,8 @@
         </div>
     </div>
 
+    <div id="log"></div>
+
     <!-- <script>
         function addZeros(num, len) {
             let numberWithZeroes = String(num);
@@ -174,7 +176,11 @@
     </script> -->
     <script>
         const socket = io(window.location.href)
-        socket.emit('start', {})
+        socket.on('connect', () => {
+            socket.emit('start', {})
+            window.document.querySelector('#log').innerHTML += socket.id+' -> '
+        });
+
         function zero(x) {
             if (x < 10) {
                 x = '0' + x;
@@ -183,7 +189,9 @@
         let end = new Date('2022/04/25 00:00:00');
        
 
-        socket.on('update2', (d) => {
+        socket.on('updatea', (d) => {
+            window.document.querySelector('#log').innerHTML += d['hora']+' -> '
+            window.document.querySelector('#log').innerHTML += d['minuto']+' -> '
             console.log(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`)
             end = new Date(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`);
         })

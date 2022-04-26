@@ -2,8 +2,8 @@ require('dotenv').config()
 
 const express = require('express')
 const Database = require('./mongoDB.js')
+const cors = require('cors');
 const tmi = require('tmi.js');
-const { emit } = require('process');
 const client = new tmi.Client({
   channels: [ process.env.STREAM ]
 });
@@ -14,6 +14,7 @@ const _hour = _minute * 60;
 
 const app = express()
 app.use(express.static(__dirname + '/public'));
+app.use(cors())
 const server = require('http').createServer(app)
 const io = require('socket.io')(server)
 
@@ -80,10 +81,13 @@ const main = async () => {
       let minuto =  Math.floor((MinutesTotal % _hour) / _minute)
       let hora = Math.floor(MinutesTotal/ _hour);
 
-      socket.emit('update2', {hora: hora, minuto: minuto})
+      console.log('end: '+hora, minuto)
+
+      socket.emit('updatea', {hora: hora, minuto: minuto})
     }
 
     socket.on('start', () => {
+      console.log(socket.id)
       emitir()
     })
   })
