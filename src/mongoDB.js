@@ -12,7 +12,7 @@ module.exports.connect = () => new Promise((resolve, reject) => {
     MongoClient.connect(uri, option, (err, db) => {
         if (err) return reject(err)
 
-        database = db.db('zahir')
+        database = db.db(process.env.DB)
         resolve(' > Connect DB with sucess!')
     })
 })

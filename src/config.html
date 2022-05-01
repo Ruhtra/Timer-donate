@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+<body>
+    <label for="">Inicio: </label> <input type="date"> <input type="time"> <br>
+    <label for="">Fim da live: </label> <input type="date"> <input type="time">
+
+    <button>submit</button>
+
+    <button onclick="pause()">Pause</button>
+    <button onclick="resume()">Resume</button>
+
+    <script>
+        const socket = io(window.location.origin)
+        socket.on('connect', () => {});
+        
+        function pause() {
+            socket.emit('pause', {})
+        }
+        function resume() {
+            socket.emit('resume', {})
+        }
+        
+        
+    </script>
+</body>
+</html>

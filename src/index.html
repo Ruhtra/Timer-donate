@@ -6,90 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            padding: 10px;
-        }
-        div#block {
-            background-color: black;
-            color: white;
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            width: 470px;
-            height: 165px;
-
-            border-radius: 14px 14px 4px 4px;
-        }
-        div#block > div {
-            padding: 10px;
-        }
-        
-        div#block > div.up {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-
-            grid-column: 1/4;
-            border-bottom: 1px solid white;
-        }
-        div#block > div.up div {
-            display: inline-block;
-            margin: 0;
-            padding: 0;
-
-            font-size: 60px;
-            font-weight: 900;
-        }
-        div#block div.down {
-            padding: 0px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-
-            font-size: 25px;
-        }
-        div#block div.down > div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        div#block div.down > div.up {
-            font-weight: 900;
-            background-color: white;
-            color: black;
-
-            padding: 5px;
-        }
-        div#block div.down > div.down {
-            padding-bottom: 5px;
-        }
-
-        div#block div#_2 {
-            border-right: 1px solid white;
-            border-radius: 0 0 10px 0;
-        }
-
-        div#block div#_3 {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
-
-            font-size: 34px;
-            font-weight: 900;
-        }
-        div#block div#_4 {
-            border-left: 1px solid white;
-            border-radius: 0 0 0 10px;
-        }
-           
-    </style>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap');
@@ -102,10 +18,12 @@
         }
         div#counter div#timer {
             margin-top: 10px;
-            margin-left: 55px;
+            /* margin-left: 55px; */
+            margin-left: 27px;
 
             font-family: 'Comfortaa', cursive;
-            font-size: 75px;
+            /* font-size: 75px; */
+            font-size: 65px;
             font-weight: 900;
             height: 100%;
             color: white;
@@ -116,101 +34,65 @@
     </style>
 </head>
 <body>
-    <!-- <div id="block">
-        <div id="_1" class="up">
-            <div>
-                +&nbsp;<div id="hour"></div>:<div id="minute"></div>&nbsp;<div>De live </div>
-            </div>
-        </div>
-        <div id="_2" class="down">
-            <div class="up">Next Stop</div>
-            <div id="nextStop" class="down"></div>
-        </div>
-        <div id="_3" class="down">
-            <div>R$<div id="fixDonate"></div>&nbsp;= +&nbsp;00:<div id="addTime">15</div></div>
-        </div>
-        <div id="_4" class="down">
-            <div class="up">Stops</div>
-            <div id="stop" class="down"></div>
-        </div>
-    </div> -->
-    
 
     <div id="counter">
         <div id="timer">
-            <div id="hour">15</div>:
-            <div id="minute">40</div>
+            <div id="hour">00</div>:
+            <div id="minute">00</div>:
+            <div id="second">00</div>
         </div>
     </div>
 
-    <div id="log"></div>
-
-    <!-- <script>
-        function addZeros(num, len) {
-            let numberWithZeroes = String(num);
-            let counter = numberWithZeroes.length;
-                
-            while(counter < len) {    
-                numberWithZeroes = "0" + numberWithZeroes;
-                counter++;
-            }
-            return numberWithZeroes;
-        }
-
-        function insertElements(variables) {
-            // document.querySelector('#stopwatch').innerHTML = variables['stopwatch']
-            document.querySelector('#hour').innerHTML = addZeros(variables['time']['hour'], 2)
-            document.querySelector('#minute').innerHTML = addZeros(variables['time']['minute'], 2)
-            document.querySelector('#stop').innerHTML = variables['stop']
-            document.querySelector('#nextStop').innerHTML = variables['nextStop']
-            document.querySelector('#fixDonate').innerHTML = variables['fixDonate']
-            document.querySelector('#addTime').innerHTML = variables['addTime']
-        }
-        const socket = io(window.location.href)
-        socket.emit('start', {})
-
-        socket.on('update', (variables) => {
-            console.log(variables)
-            insertElements(variables)
-        })
-    </script> -->
     <script>
-        const socket = io(window.location.href)
-        socket.on('connect', () => {
-            socket.emit('start', {})
-            // window.document.querySelector('#log').innerHTML += socket.id+' -> '
-        });
-
         function zero(x) {
             if (x < 10) {
                 x = '0' + x;
             } return x;
         }
-        let end = new Date('2022/04/25 00:00:00');
-       
 
-        socket.on('update', (d) => {
-            // window.document.querySelector('#log').innerHTML += d['hora']+' -> '
-            // window.document.querySelector('#log').innerHTML += d['minuto']+' -> '
-            console.log(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`)
-            end = new Date(`2022/04/25 ${zero(d['hora'])}:${zero(d['minuto'])}:00`);
+        const socket = io(window.location.origin)
+        socket.on('connect', () => {
+            socket.emit('start', {})
+        });
+
+        let end = new Date();
+        socket.on('update', (date) => {
+            end = new Date(date)
         })
-            var counter = setInterval(function(){
+        // Pause / Resume
+            var pause = false
+            var timeStop = 0
+            socket.on('pauseTime', () => {
+                pause = true
+                timeStop = new Date()
+            })
+            socket.on('resume', () => {
+                pause = false
+            })
+       
+        // Interval
+            setInterval(function(){
                 var _second = 1000;
                 var _minute = _second * 60;
                 var _hour = _minute * 60;
 
-                var now = new Date();
-                var diff = end - now;
+                if (pause) { var now = timeStop }
+                else { var now = new Date(); }
+                
+                var diff = end - now
+                if (diff < 0) { diff = 0}
 
                 var hour = Math.floor(diff/ _hour);
                 var minute = Math.floor((diff % _hour) / _minute);
                 var second = Math.floor((diff % _minute) / _second);
 
                 document.querySelector('#timer #hour').innerHTML = zero(hour);
-                document.querySelector('#timer #minute').innerHTML = zero(minute+1);
+                document.querySelector('#timer #minute').innerHTML = zero(minute);
+                document.querySelector('#timer #second').innerHTML = zero(second);
                 
             },1000);
+
+        
     </script>
 </body>
 </html>
