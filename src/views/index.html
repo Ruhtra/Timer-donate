@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <meta http-equiv="refresh" content=".5" > -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap');
+
+        :root {
+            --width-img: 757px;
+            --height-img: 153px;
+
+            --meta-color: rgba(0, 0, 0, .3);
+            --meta-porcent: 100%;
+        }
+        /* Group */
+            div#group {
+                position: relative;
+            }
+            /* Background image */
+                div#group div#background {
+                    position: absolute;
+
+                    background: url('Background.png');
+                    background-repeat: no-repeat;
+
+                    width: var(--width-img);
+                    height: var(--height-img);
+                }
+                div#group div#background > div {
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+                    position: absolute;
+
+                    color: white;
+                    font-family: 'Comfortaa', cursive;
+                    font-weight: 900;
+                    height: 100%;
+                }
+                div#group div#background div#timer {
+                    margin-top: 51px;
+                    margin-left: 115px;
+                    font-size: 40px;
+                }
+                div#group div#background div#moreTime {
+                    margin-top: 50px;
+                    margin-left: 518px;
+                    font-size: 36px;
+                }
+                /* Meta */
+                    div#group div#background div#meta {
+                        justify-content: space-between;
+
+                        width: var(--width-img);
+                        z-index: 1;
+                    }
+                    div#group div#background div#meta div#now {
+                        font-size: 30px;
+
+                        margin-top: -25px;
+                        margin-left: 20px;
+                    }
+                    div#group div#background div#meta div#objective {
+                        font-size: 25px;
+
+                        margin-top: -5px;
+                        margin-right: 180px;
+                    }
+
+            /* Bar meta */
+                div#group svg#bar {
+                    position: absolute;
+                    width: var(--width-img);
+                    height: var(--height-img);            
+                }
+                div#group svg#bar polygon{
+                    fill: var(--meta-color);
+                    clip-path: polygon(
+                        0% 0%,
+                        var(--meta-porcent) 0%,
+                        var(--meta-porcent) 100%,
+                        0% 100%);
+                }
+    </style>
+</head>
+<body>
+    <div id="group">
+        <div id="background">
+            <div id="timer">
+                <div id="hour">00</div>:
+                <div id="minute">00</div>:
+                <div id="second">00</div>
+            </div>
+            <div id="meta">
+                <div id="now">R$0,0 (0%)</div>
+                <div id="objective">R$0,00</div>
+            </div>
+            <div id="moreTime">
+                <div id="value">R$00,00</div>
+            </div>
+        </div>
+        <svg id="bar">
+            <polygon points="
+                5 24,
+                    318.7 39, 316.2 46,
+                    444 46, 444.5 45,
+                547 50.5,
+
+                752 103,
+                    691 103, 691 96,
+                        666 96, 666 90,
+                        499 90, 499 96,
+                    473 96, 473 103,
+                    300 103, 300 97,
+                        258 97, 258 90,
+                        111 90, 111 97,
+                    82 97, 82 103,
+                5 103
+            "></polygon>
+        </svg>
+    </div>
+
+    <script>
+        function zeroFront(x) {
+            if (x < 10) {
+                x = '0' + x;
+            } return x;
+        }
+        function zeroBack(x) {
+            if (x[1] == undefined) {
+                x = x + '0'
+            } return x
+        }
+
+        function reais(value) {
+            return String(value).split('.').map((e, i) => {
+                if (i == 0) { return zeroFront(e) }
+                return zeroBack(e)
+            }).join(',')
+        }
+
+        const socket = io(window.location.origin)
+        socket.on('connect', () => {
+            socket.emit('updateServer', {})
+        });
+
+        let end = new Date();
+        let start = new Date();
+        
+        socket.on('update', (data) => {
+            let rest = reais(data.rest)
+            let totalDonate = reais(data.totalDonate)
+            let meta = reais(data.meta)
+
+            let porcent = ((data.totalDonate/data.meta)*100).toFixed(1)
+
+            window.document.querySelector('div#value').innerHTML = 'R$'+rest
+            window.document.querySelector('div#meta div#now').innerHTML = `R$${totalDonate} (${porcent}%)`
+            window.document.querySelector('div#meta div#objective').innerHTML = 'R$'+meta
+            window.document.querySelector('svg#bar polygon').style.clipPath = `polygon(0% 0%, ${porcent}% 0%, ${porcent}%  100%, 0% 100%)`
+
+            start = new Date(data.initialTime)
+            end = new Date(data.endTotalTime)
+        })
+        
+        // Pause / Resume
+        var pause = false
+        var timeStop = 0
+        socket.on('pauseTime', () => {
+            pause = true
+            timeStop = new Date()
+        })
+        socket.on('resume', () => {
+            pause = false
+        })
+
+        // Interval
+            setInterval(function(){
+                var _second = 1000;
+                var _minute = _second * 60;
+                var _hour = _minute * 60;
+
+                // Verifica se o contador ta pausado
+                if (pause) { var now = timeStop }
+                else { var now = new Date(); }
+
+                // Verifica se bateu a hora do incio do timer
+                if (now < start) { now = start  }
+
+                var diff = end - now
+                if (diff < 0) { diff = 0}
+
+                var hour = Math.floor(diff/ _hour);
+                var minute = Math.floor((diff % _hour) / _minute);
+                var second = Math.floor((diff % _minute) / _second);
+
+                document.querySelector('#timer #hour').innerHTML = zeroFront(hour);
+                document.querySelector('#timer #minute').innerHTML = zeroFront(minute);
+                document.querySelector('#timer #second').innerHTML = zeroFront(second);
+                
+            },1000);
+    </script>
+</body>
+</html>

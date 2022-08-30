@@ -13,7 +13,7 @@ module.exports.connect = () => new Promise((resolve, reject) => {
         if (err) return reject(err)
 
         database = db.db(process.env.DB)
-        resolve(' > Connect DB with sucess!')
+        resolve(` > [ON] DB - ${process.env.DB}`)
     })
 })
 

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    <title>Configuração</title>
+
+    <!-- Grid -->
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            width: 100vw;
+            height: 100vh;
+
+            background-color: #333;
+        }
+       .grid {
+            display: grid;
+        }
+        /* Button send */
+            a.send {
+                background-color: #555;
+                color: white;
+                padding: 4px 10px 4px 10px;
+                border-radius: 10px;
+                box-shadow: 2px 2px 3px rgba(255, 255, 255, .5);
+                cursor: pointer;
+            }
+            a.send:hover {
+                box-shadow: 2px 2px 3px rgba(255, 255, 255, .5) inset;
+            }
+
+        /* Inputs */
+            input {
+                border: 0;
+                outline: 0;
+                height: 100%;
+                font-size: 17px;
+                text-shadow: .5px .5px 1px rgba(0, 0, 0, .5);
+                background-color: rgba(255, 255, 255, .4);
+                box-shadow: 0 0 2px rgba(0, 0, 0, .5);
+            }
+            input#meta {
+                text-align: center;
+
+                border-radius: 0 10px 0 0;
+                width: 100px;
+            }
+            input[type="date"] {
+                border-radius: 15px 0 0 15px;
+                padding: 0px 10px 0px 20px;
+                width: 140px;
+            }
+            input[type="time"] {
+                border-radius: 0 13px 13px 0;
+            }
+
+        #grid {
+            width: 90vw;
+            height: 90vh;
+            grid-template-columns: 1fr 220px 400px;
+        }
+        #grid > section {
+            display: grid;
+            grid-template-rows: 4fr 1fr;
+
+        }
+        #grid > section > div {
+            background-color: #ccc;
+
+            font-size: 25px;
+            border: 1px solid black;
+            border-top: 0;
+            border-radius: 10px;
+            box-shadow: 3px 3px 10px black;
+        }
+        /* Margins */
+            #grid > section:not(:last-child) > div {
+                margin-right: 10px;
+            }
+            #grid > section > div:not(:last-child) {
+                margin-bottom: 10px;
+            }
+
+        /* Table config */
+            #config {
+                width: 400px;
+            }
+            #config > div > * {
+                border-top: 1px solid black;
+                border-radius: 10px 10px 0 0;
+                
+                padding: 10px 4px;
+            }
+            #config .columns_3 {
+                grid-template-columns: 130px 3fr 1fr;
+            }
+            #config .columns_2 {
+                grid-template-columns: 130px 1fr;
+            }
+            #config .columns_2 > *, .columns_3 > * {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                
+                margin-left: 4px;
+                margin-right: 4px;
+            }
+            /* Ajustar ao final */
+                #config .justify-end {
+                    justify-content: end;
+                }
+
+        /* logs */
+            .log {
+                overflow: hidden;
+                height: calc((90vh/5)*4);
+                overflow-y: scroll;
+            }
+            .rows {
+                background-color: rgba(0, 0, 0, .1);
+                margin: 5px;
+            }
+            .rows:first-child {
+                border-radius: 10px 10px 0 0;
+            }
+            .rows:last-child {
+                border-radius: 0 0 10px 10px;
+            }
+            .rows:not(.rows:first-child) {
+                border-top: 2px solid black;
+            }
+            /* Table log-donates */
+                #donate div .rows {
+                    display: grid;
+                    grid-template-columns: 2fr 1fr;
+                }
+                #donate div .rows > * {
+                    display: flex;
+                    justify-content: left;
+                    align-items: center;
+
+                    margin: 3px;
+                }
+                
+            /* Table log-pause */
+                #pause div .rows {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                #pause div #total {
+                    justify-content: space-around;
+                }
+
+        /* Clear */
+            div.clear {
+                display: grid;
+                grid-template-rows: 1fr 2fr;
+            }
+            div.clear > div {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            /* Titulo */
+                div.clear > div#top {
+                    background-color: rgba(0, 0, 0, .2);
+                    border-bottom: 3px solid black;
+                }
+            /* button */
+                div.clear > div > a {
+                    font-size: 35px;
+                }
+
+        /* Pause */
+            div#pause {
+                display: flex;
+                justify-content: space-evenly;
+                align-items: center;
+
+                width: 200px;
+                height: 80px;
+            }
+            div#pause > * {
+                font-size: 30px;
+                text-shadow: .5px .5px 2px rgba(0, 0, 0, .5);
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 50px;
+                border: none;
+            }
+
+    </style>
+    <!-- Style for button on/off -->
+    <style>
+        .onoff input.toggle {
+            display: none;
+        }
+
+        .onoff input.toggle + label {
+            display: inline-block;
+            position: relative;
+            box-shadow: inset 0 0 0px 1px #d5d5d5;
+            background-color: rgba(0, 0, 0, .3);
+            height: 40px;
+            width: 75px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .onoff input.toggle + label:before {
+            content: "";
+            display: block;
+            height: 40px;
+            width: 40px;
+            border-radius: 30px;
+            background: rgba(19, 191, 17, 0);
+            transition: 0.1s ease-in-out;
+        }
+
+        .onoff input.toggle + label:after {
+            content: "";
+            position: absolute;
+            height: 40px;
+            width: 40px;
+            top: 0;
+            left: 0px;
+            border-radius: 30px;
+            background: #fff;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: 0.1s ease-in-out;
+        }
+
+        .onoff input.toggle:checked + label:before {
+            width: 75px;
+            background: #13bf11;
+        }
+
+        .onoff input.toggle:checked + label:after {
+            left: 40px;
+            box-shadow: inset 0 0 0 1px #13bf11, 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <!-- Secondary screem  -->
+    <style>
+        /* Secondary screen */
+            div#screen_secondary {
+                position: absolute;
+                top: 0;
+                left: 0;   
+            }
+            div.screen_secondary {
+                position: absolute;
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0, 0, 0, .7);
+            }
+            div.screen {
+                display: grid;
+                grid-template-rows: 2fr 1fr;
+
+                border-radius: 20px;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 1);
+
+                width: 400px;
+                height: 250px;
+                background-color: #ccc;
+            }
+            div.screen > * {
+                display: grid;
+                grid-template-rows: 2fr 1fr;
+            }
+            /* Top */
+                div.screen h1, div.screen h2 {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    text-align: center;
+                }
+                div.screen h2 {
+                    margin-top: 20px;
+                }
+
+            /* bottom */
+                div.screen div#bottom {
+                    display: flex;
+                    justify-content: space-around;
+                    align-items: center;
+                }
+
+                /* Button */
+                    div.screen a.button {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        height: 20px;
+                        width: 70px;
+                        
+                        cursor: pointer;
+                        padding: 20px;
+                        border: 1px solid rgba(0, 0, 0, .5);
+                        border-radius: 20px;
+                        box-shadow: 1px 1px 3px rgba(0, 0, 0, .5);
+                        
+                        font-weight: 900;
+                        font-size: 30px;
+                        text-shadow: 1px 1px 1px rgba(0, 0, 0, .6);
+                        color: white;
+                    }
+                    div.screen a.button:hover {
+                        box-shadow: 1px 1px 3px rgba(0, 0, 0, .5) inset;
+                    }
+                    div.screen a.confirm {
+                        background-color: #13bf11;
+                    }
+                    div.screen a.negative {
+                        background-color: red;
+                    }
+    </style>
+    <!-- Message event -->
+    <style>
+    /* Message events */
+        header {
+            grid-row: 1 / 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
+        }
+        header div#event {
+            position: absolute;
+            visibility: hidden;
+
+            top: 0;
+            left: 0;
+            
+            width: 640px;
+            left: -320px;
+    
+            margin-top: 20px;
+        }
+        header div#event div.boxMessage {
+            width: 300px;
+    
+            max-height: 130px;
+    
+            transition: max-height 1s, transform 1s;
+        }
+        header div#event div.gridMessage {
+            display: grid;
+            grid-template: 25px 1fr / 1fr 25px;
+            gap: 3px;
+    
+            width: 300px;
+            min-height: 100px;
+    
+            margin-bottom: 8px;
+            padding: 5px;  
+            visibility: visible;
+    
+            background-color: rgb(20, 113, 195);
+            box-shadow: 10px 4px 5px rgba(0, 0, 0, .5);
+        }
+        /* Items */
+            header div#event div.gridMessage * {
+                color: white;
+                font-weight: 900;
+                left: -100%;
+            }
+            header div#event div.gridMessage div.up {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+    
+            header div#event div.gridMessage div#title {
+                justify-content: flex-start;
+            }
+            header div#event div.gridMessage div#message {
+                grid-column: 1 / -1;
+    
+                border: 1px solid black;
+                background-color: rgba(0, 0, 0, .7);
+                padding: 3px;
+            }
+            /* Close */
+                header div#event div.gridMessage div#close {
+                    cursor: pointer;
+                }
+                header div#event div.gridMessage div#close svg {
+                    width: 25x;
+                    height: 25px;
+                }
+                header div#event div.gridMessage div#close:hover svg {
+                    animation: Move .3s linear infinite;
+                }
+                /* Animation */
+                @keyframes Move {
+                    0%, 100% { transform: translateX(0); }
+                    50% { transform: translateX(-5px); }
+                }
+    </style>
+
+</head>
+<body>
+    <header>
+        <div id="event">
+        </div>
+    </header>
+
+    <div id="grid" class="grid">
+        <section id="config">
+            <div>
+                <div id="start" class="columns_3 grid">
+                    <label for="">Inicio: </label>
+                    <div class="justify-end"><input type="date" id="date_start"></div>
+                    <div><input type="time" id="time_start"></div>
+                </div>
+                <div id="end" class="columns_3 grid">
+                    <label for="">Fim: </label>
+                    <div class="justify-end"><input type="date" id="date_end"></div>
+                    <div><input type="time" id="time_end"></div>
+                </div>
+                <div id="meta" class="columns_2 grid">
+                    <label for="">Meta:</label>
+                    <div class="justify-end"><input type="number" id="meta" step="0.01" placeholder="R$0,00"> </div>
+                </div>
+                <div id="submit" class="columns_2 grid">
+                    <div class="label">Enviar</div>
+                    <div id="submit"class="justify-end">
+                        <a class="send">Concluir</a>
+                    </div>
+                </div>
+            </div>
+            <div id="pause" class="">
+                <div class="label">Pause:</div>
+                <div class="onoff">
+                    <input type="checkbox" class="toggle" id="onoff">
+                    <label for="onoff"></label>
+                </div>
+            </div>
+        </section>
+        <section id="pause">
+            <div class="log">
+            </div>
+            <div id="clear-pauses" class="clear">
+                <div id="top">
+                    <h1>Clear pause</h1>
+                </div>
+                <div id="down">
+                    <a class="send" onclick="screens.pause.open()">Clear Pause</a>
+                </div>
+            </div>
+        </section>
+        <section id="donate">
+            <div class="log">
+            </div>
+            <div id="clear-donations" class="clear">
+                <div id="top">
+                    <h1>Clear Donates</h1>
+                </div>
+                <div id="down">
+                    <a class="send" onclick="screens.donate.open()">Clear Donate</a>
+                </div>
+            </div>
+        </section> 
+    </div>
+    <div id="screen_secondary">
+        <div id="confirm-donate" class="screen_secondary" style="display: none;">
+            <div class="screen">
+                <div id="top">
+                    <h1>Isso deleterá todos os donates do registro</h1>
+                    <h2>Deseja continuar?</h2>
+                </div>
+                <div id="bottom">
+                    <a class="button confirm" onclick="">Sim</a>
+                    <a class="button negative" onclick="screens.donate.close()">Não</a>
+                </div>
+            </div>
+        </div>
+        <div id="confirm-pause" class="screen_secondary" style="display: none;">
+            <div class="screen">
+                <div id="top">
+                    <h1>Isso deleterá todos os pauses do registro</h1>
+                    <h2>Deseja continuar?</h2>
+                </div>
+                <div id="bottom">
+                    <a class="button confirm" onclick="">Sim</a>
+                    <a class="button negative" onclick="screens.pause.close()">Não</a>
+                </div>
+            </div>
+        </div>
+    </div> 
+    
+    
+    <script>
+        const screen_pause = document.querySelector('div#confirm-pause')
+        const screen_donate = document.querySelector('div#confirm-donate')
+        const screens = {
+            pause: {
+                open: () => { screen_pause.style.display = 'flex' },
+                close: () => { screen_pause.style.display = 'none' }
+            },
+            donate: {
+                open: () => { screen_donate.style.display = 'flex' },
+                close: () => { screen_donate.style.display = 'none' }
+            }
+        }
+    </script>
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>
